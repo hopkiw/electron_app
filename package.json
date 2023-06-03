@@ -1,0 +1,22 @@
+{
+  "name": "electron_app",
+  "version": "1.0.0",
+  "description": "description",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "babel src -d lib",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Liam Hopkins",
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/cli": "^7.21.5",
+    "@babel/core": "^7.22.1",
+    "@babel/preset-react": "^7.22.3",
+    "electron": "^25.0.1"
+  },
+  "dependencies": {
+    "sqlite3": "^5.1.6"
+  }
+}

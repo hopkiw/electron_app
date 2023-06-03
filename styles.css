@@ -1,0 +1,47 @@
+body {
+  color: #555;
+  padding: 10px;
+}
+  
+h1 {
+  font-family: sans-serif;
+  font-size: 2em;
+  margin: 20px 0 0 0;
+ text-align: center;
+}
+  
+p {
+  color: #222;
+  font-family: sans-serif;
+  font-weight: bold;
+  text-align: center;
+}
+  
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+  
+.wrap {
+  max-width: 1040px;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
+  
+.green-bg {
+  background: green;
+}
+
+/* TODO: flip this and use grey */
+img {
+  display: block;
+  transition: opacity .3s linear;
+}
+  
+img:hover {
+  opacity: .5;
+  cursor: pointer;
+}  

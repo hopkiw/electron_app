@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'">
+    <link href="./styles.css" rel="stylesheet">
+  </head>
+  <body>
+    <div id="container" class="wrap">
+      <figure class="green-bg">
+        <img id="the-image" />
+      </figure>
+    </div>
+    <form id="signup" action="fakey" method="get">
+      <input type="text" id="tag" name="tag">
+      <input type="submit" value="Add tag">
+    </form>
+    <button id="prev">Prev</button>
+    <button id="next">Next</button>
+
+    <!-- You can also require other files to run in this process -->
+    <script src="./renderer.js"></script>
+  </body>
+</html>
