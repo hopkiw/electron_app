@@ -11,7 +11,9 @@ form.addEventListener('submit', async function (event) {
   // stop form submission
   event.preventDefault();
 
-  // Do something else...
+  const tag = this.childNodes[1].value;
+  window.electronAPI.tagFile(filePaths[curImage], tag);
+  this.childNodes[1].value = '';
 });
 
 var filePaths = [];
@@ -34,7 +36,8 @@ async function changeImage() {
     default:
       console.log(`i don't know ${this.id} ${typeof(this.id)}`);
   }
-  img.src = filePaths[curImage];
+  img.src = '/home/liamh/' + filePaths[curImage];
+  showTags(filePaths[curImage]);
 }
 
 document.querySelector('#next').onclick = changeImage
@@ -62,8 +65,9 @@ async function handleKeyPress (event) {
   if (curImage < 0) {
     curImage = 0;
   }
-  img.src = filePaths[curImage];
+  img.src = '/home/liamh/' + filePaths[curImage];
   console.log(`You pressed ${event.key}, curImage ${curImage}/${filePaths.length}`);
+  showTags(filePaths[curImage]);
 }
 
 async function handleLoad (event) {
@@ -72,18 +76,37 @@ async function handleLoad (event) {
     filePaths = await window.electronAPI.getFilePaths();
   } 
   preload(...filePaths);
-  img.src = filePaths[curImage];
+  img.src = '/home/liamh/' + filePaths[curImage];
+  showTags(filePaths[curImage]);
 }
 
 window.addEventListener('keyup', handleKeyPress, true)
-window.addEventListener('load', handleLoad, true)
+window.addEventListener('load', handleLoad)
 
 var images = [];
 function preload() {
   for (var i = 0; i < arguments.length; i++) {
     images[i] = new Image();
-    images[i].src = arguments[i];
+    images[i].src = '/home/liamh/' + arguments[i];
   }
+}
+
+const tagtable = document.querySelector('#tags');
+// TODO: try to pass a callback over the context bridge? vs promise
+
+async function showTags (filename) {
+  var new_tbody = document.createElement('tbody');
+
+  const tags = await window.electronAPI.getTags(filename);
+  for (let tag in tags) {
+    var row = new_tbody.insertRow(-1);
+    var cell = row.insertCell(0);
+    cell.innerHTML = tags[tag];
+  }
+
+  var old_tbody = document.querySelector('#the_tbody');
+  old_tbody.parentNode.replaceChild(new_tbody, old_tbody)
+  new_tbody.id = 'the_tbody';
 }
 
 
