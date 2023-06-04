@@ -16,22 +16,47 @@ let db = new sqlite3.Database(dbname, sqlite3.OPEN_READWRITE, (err) => {
   console.log(`Opened SQLite database "${dbname}"`);
 });
 
-let sql = `SELECT id, path FROM paths`;
 
-/*
-console.log('All rows in the "paths" table:');
-db.each(sql, (err, row) => {
-  if (err) {
-    console.error(err.message);
-  }
+function tagFile(event, path, tag) {
+  console.log(`adding ${tag} to ${path}`);
+  db.run(`INSERT OR IGNORE INTO tags (tag) VALUES (?)`, [ tag ]);
+  db.run(`INSERT OR IGNORE INTO filetags (pathId, tagId) VALUES (
+    (SELECT id FROM paths WHERE path = ?), 
+    (SELECT id FROM tags WHERE tag = ?))`,
+  [ path, tag ]);
+}
 
-  console.log(`${row.id}: ${row.path}`);
-});
-*/
+function getTags(event, path) {
+  var sql = `SELECT tags.tag FROM filetags
+  INNER JOIN paths ON paths.id = filetags.pathid
+  INNER JOIN tags ON tags.id = filetags.tagid
+  WHERE paths.path = ?`
 
+  console.log(`getting tags for ${path}`);
+  return new Promise((resolve, reject) => {
+    var tags = [];
+    db.each(sql, [path],
+      (err, row) => {
+        if (err) {
+          return console.error(err.message);
+        }
+
+        console.log(`adding tag ${row.tag} to res`);
+        tags.push(row.tag);
+      },
+      (err, count) => {
+        if (err) {
+          reject(console.error(err));
+        }
+
+        console.log(`finished db.each with ${count} rows`);
+        resolve(tags);
+      });
+  });
+}
 
 function getFilePaths () {
-  console.log(`getting filenames with ${sql}`);
+  var sql = `SELECT id, path FROM paths`;
   return new Promise((resolve, reject) => {
     var records = [];
     db.each(sql, [],
@@ -40,7 +65,7 @@ function getFilePaths () {
           return console.error(err.message);
         }
 
-        records.push(`/home/liamh/${row.path}`);
+        records.push(row.path);
       },
       (err, count) => {
         if (err) {
@@ -75,6 +100,8 @@ function createWindow () {
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
   ipcMain.handle('getFilePaths', getFilePaths);
+  ipcMain.handle('getTags', getTags);
+  ipcMain.on('tagFile', tagFile);
   createWindow();
 
   app.on('activate', function () {
