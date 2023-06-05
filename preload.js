@@ -24,6 +24,7 @@ contextBridge.exposeInMainWorld('myAPI', {
 
 contextBridge.exposeInMainWorld('electronAPI', {
   getFilePaths: () => ipcRenderer.invoke('getFilePaths'),
+  getAllTags: () => ipcRenderer.invoke('getAllTags'),
   getTags: (path) => ipcRenderer.invoke('getTags', path),
   tagFile: (path, tag) => ipcRenderer.send('tagFile', path, tag)
 })

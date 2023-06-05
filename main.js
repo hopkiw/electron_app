@@ -78,6 +78,29 @@ function getFilePaths () {
   });
 }
 
+function getAllTags () {
+  var sql = `SELECT tag FROM tags`;
+  return new Promise((resolve, reject) => {
+    var records = [];
+    db.each(sql, [],
+      (err, row) => {
+        if (err) {
+          return console.error(err.message);
+        }
+
+        records.push(row.tag);
+      },
+      (err, count) => {
+        if (err) {
+          reject(console.error(`error: ${err}`));
+        }
+
+        console.log(`finished db.each with ${count} rows`);
+        resolve(records);
+      });
+  });
+}
+
 function createWindow () {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
@@ -100,6 +123,7 @@ function createWindow () {
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
   ipcMain.handle('getFilePaths', getFilePaths);
+  ipcMain.handle('getAllTags', getAllTags);
   ipcMain.handle('getTags', getTags);
   ipcMain.on('tagFile', tagFile);
   createWindow();
