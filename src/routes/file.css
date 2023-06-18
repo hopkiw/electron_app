@@ -1,0 +1,19 @@
+.container {
+  margin: 25px;
+  outline: dashed 1px black;
+
+  /* Center child horizontally*/
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.child {
+  width: 75%;
+  background-color: red;
+
+  /* Center child horizontally (img) */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

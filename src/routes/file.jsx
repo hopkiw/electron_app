@@ -3,7 +3,12 @@ import {
   redirect,
   useNavigation,
   useSubmit,
+  useLoaderData,
+  Link, 
 } from "react-router-dom";
+
+import pathList from '../db/fakey';
+import './file.css';
 
 export async function action() {
   console.log('file.action called');
@@ -11,23 +16,43 @@ export async function action() {
   return redirect(`/`);
 }
 
-export async function loader({ request }) {
+export async function loader({ request, params }) {
   console.log('file.loader called');
-  const url = new URL(request.url);
-  const q = url.searchParams.get("q");
-  const contacts = "contacts from file.jsx";
+  // const img = getPaths[params.fileId];
+  const img = pathList[params.fileId];
+  // const tags = getTags(params.fileId);
+  // const tags = tagList[params.fileId];
+  const tags = ["static", "tags", "only"];
 
-  return { contacts, q };
+
+  return { img, tags };
 }
 
 export default function File() {
-  const { contacts, q } = useLoaderData();
+  const { img, tags } = useLoaderData();
 
   return (
     <>
-      <div id="file">
-        <p>Hello</p>
+      <div className="container">
+        <div className="child">
+          <img src={"/photos/" + img.path} />
+        </div>
       </div>
+      <ul>
+        {tags.map(tag => (
+          <li key={tag} >
+            <p>{tag}</p>
+          </li>
+        ))}
+      </ul>
+      <p>I should show:</p>
+      <ol>
+        <li>An image</li>
+        <li>The tags on the image w editors</li>
+        <li>amend the current search string</li>
+        <li>what's the url structure?</li>
+      </ol>
+      <Link to="/">Home</Link>
     </>
   );
 }
