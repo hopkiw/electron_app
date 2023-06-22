@@ -3,20 +3,20 @@ import { Link } from 'react-router-dom';
 import { SmileOutlined } from '@ant-design/icons';
 
 import Dropdown from '../components/dropdown';
-import catList from '../db/fakey';
+// import catList from '../db/index.cjs';
 import './gallery.css';
 
 export async function action() {
   console.log('gallery.action called');
 
-  return redirect(`/`);
+  // return redirect(`/`);
 }
 
 export async function loader({ request }) {
   console.log('gallery.loader called');
   const url = new URL(request.url);
   const q = url.searchParams.get("q");
-  const data = "contacts from gallery.jsx";
+  const res = fetch("/api/images")
 
   return { data, q };
 }

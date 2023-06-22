@@ -1,0 +1,8 @@
+{
+  "development": {
+    "database": "mydb",
+    "dialect": "sqlite",
+    "storage": "./fake.db",
+    "logging": false
+  }
+}
