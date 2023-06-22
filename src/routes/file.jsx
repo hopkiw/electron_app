@@ -7,7 +7,6 @@ import {
   Link, 
 } from "react-router-dom";
 
-import pathList from '../db/fakey';
 import './file.css';
 
 export async function action() {
@@ -19,9 +18,10 @@ export async function action() {
 export async function loader({ request, params }) {
   console.log('file.loader called');
   // const img = getPaths[params.fileId];
-  const img = pathList[params.fileId];
+  // const img = pathList[params.fileId];
   // const tags = getTags(params.fileId);
   // const tags = tagList[params.fileId];
+  const img = "img";
   const tags = ["static", "tags", "only"];
 
 
@@ -35,7 +35,7 @@ export default function File() {
     <>
       <div className="container">
         <div className="child">
-          <img src={"/photos/" + img.path} />
+          <img src={img.path} />
         </div>
       </div>
       <ul>

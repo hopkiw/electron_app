@@ -1,5 +1,5 @@
 import { Col, Row, Image } from 'antd';
-import { Link } from 'react-router-dom';
+import { Link, useLoaderData } from 'react-router-dom';
 import { SmileOutlined } from '@ant-design/icons';
 
 import Dropdown from '../components/dropdown';
@@ -16,23 +16,26 @@ export async function loader({ request }) {
   console.log('gallery.loader called');
   const url = new URL(request.url);
   const q = url.searchParams.get("q");
-  const res = fetch("/api/images")
+  const res = await fetch("http://localhost:3000/api/files")
+  const data = await res.json();
 
   return { data, q };
 }
 
 export default function Gallery() {
+  const { data, q } = useLoaderData();
+  console.log("data is", data);
   const cols = [];
 
-  catList.map((cat, i) => {
+  data.result.map((cat) => {
     cols.push(
-      <Col key={i.toString()} span={3} >
-        <Link to={"/files/" + i} >
+      <Col key={cat.id.toString()} span={3} >
+        <Link to={"/files/" + cat.id} >
           <Image
             preview={false}
             height={200}
             width={200}
-            src={"/photos/" + cat.path}
+            src={encodeURIComponent(cat.name)}
             placeholder={ <SmileOutlined width={200} height={200} /> }
           />
         </Link>

@@ -1,22 +1,46 @@
-const { File } = require('../models/index.cjs');
+const { File, Tag } = require('../models/index.cjs');
 module.exports = {
   async getFiles() {
-    const res = await File.findAll();
+    const res = await File.findAll({
+      attributes: ["name", "id"],
+    });
     return res;
   },
-  async getFileById(id) {
-    const res = await File.findByPk(id);
+  async getFileById(id, withTags) {
+    console.log("you asked for", id, "withTags:", withTags);
+    const opts = {
+      attributes: ["name", "id"],
+    }
+    if (withTags) {
+      opts.include = {
+        model: Tag,
+        attributes: ["name", "id"],
+        through: { attributes: [] }
+      }
+    }
+    const res = await File.findByPk(id, opts);
     return res;
   },
-  async getFileByName(id) {
-    const res = await File.findOne({ where:{ name: name }});
+  async getFileByName(id, withTags) {
+    const opts = {
+      attributes: ["name", "id"],
+      where: { name: name }
+    }
+    if (withTags) {
+      opts.include = {
+        model: Tag,
+        attributes: ["name", "id"],
+        through: { attributes: [] }
+      }
+    }
+    const res = await File.findOne(opts);
     return res;
   },
   async newFile(name) {
     const file = await File.findOne({where: {name: name}});
     if (file) {
-      console.log("returning existing file");
-      return file;
+      // TODO: error
+      return {};
     }
     const res = await File.create({name});
     return res;
@@ -26,18 +50,18 @@ module.exports = {
     if (res) {
       return res.destroy();
     }
+    // TODO: error
   },
   async updateFile(id, tags) {
-    console.log("looking for id", id);
     const file = await File.findByPk(id);
     if (!file) {
-      console.log("whoops no file");
-      // do some kind of error handling?
+      // TODO: error
       return {};
     }
     const existing = await file.getTags();
+    const result = await file.addTags(tags);
 
-    return existing;
+    return result;
   },
   // As of now files only have a single field, name, so this is unused.
   async replaceFile() {

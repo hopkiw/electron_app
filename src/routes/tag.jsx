@@ -7,7 +7,6 @@ import {
   Link, 
 } from "react-router-dom";
 
-import tagList from '../db/fakey';
 import './tag.css';
 
 export async function action() {
@@ -18,7 +17,8 @@ export async function action() {
 
 export async function loader({ request, params }) {
   console.log('tag.loader called');
-  const tag = tagList[params.tagId];
+  // const tag = tagList[params.tagId];
+  const tag = "thetag";
 
   return { tag };
 }
