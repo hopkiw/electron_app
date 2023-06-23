@@ -7,7 +7,7 @@ module.exports = {
     return res;
   },
   async getFileById(id, withTags) {
-    console.log("you asked for", id, "withTags:", withTags);
+    console.log("you asked for tagId", id, "withTags:", withTags);
     const opts = {
       attributes: ["name", "id"],
     }

@@ -13,7 +13,6 @@ export async function action() {
 }
 
 export async function loader({ request }) {
-  console.log('gallery.loader called');
   const url = new URL(request.url);
   const q = url.searchParams.get("q");
   const res = await fetch("http://localhost:3000/api/files")
@@ -22,12 +21,24 @@ export async function loader({ request }) {
   return { data, q };
 }
 
+function onmouseover(e) {
+  if (e.target.src.includes(".gif")) {
+    e.target.src = e.target.src.replace("-static.gif", ".gif");
+  }
+}
+function onmouseleave(e) {
+  if (e.target.src.includes(".gif")) {
+    e.target.src = e.target.src.replace(".gif", "-static.gif");
+  }
+}
+
 export default function Gallery() {
   const { data, q } = useLoaderData();
   console.log("data is", data);
   const cols = [];
 
   data.result.map((cat) => {
+    const path = (cat.name.includes(".gif") ? cat.name.replace(".gif", "-static.gif") : cat.name)
     cols.push(
       <Col key={cat.id.toString()} span={3} >
         <Link to={"/files/" + cat.id} >
@@ -35,7 +46,9 @@ export default function Gallery() {
             preview={false}
             height={200}
             width={200}
-            src={encodeURIComponent(cat.name)}
+            src={encodeURIComponent(path)}
+            onMouseOver={onmouseover}
+            onMouseLeave={onmouseleave}
             placeholder={ <SmileOutlined width={200} height={200} /> }
           />
         </Link>

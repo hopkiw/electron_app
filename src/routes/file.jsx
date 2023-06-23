@@ -16,32 +16,30 @@ export async function action() {
 }
 
 export async function loader({ request, params }) {
-  console.log('file.loader called');
-  // const img = getPaths[params.fileId];
-  // const img = pathList[params.fileId];
-  // const tags = getTags(params.fileId);
-  // const tags = tagList[params.fileId];
-  const img = "img";
-  const tags = ["static", "tags", "only"];
+  const url = new URL('http://localhost:3000/api/files/' + params.fileId)
+  const search = {"tags": "true"}
+  url.search = new URLSearchParams(search).toString();
 
+  const res = await fetch(url)
+  const data = await res.json();
 
-  return { img, tags };
+  return { data };
 }
 
 export default function File() {
-  const { img, tags } = useLoaderData();
+  const { data } = useLoaderData();
 
   return (
     <>
       <div className="container">
         <div className="child">
-          <img src={img.path} />
+          <img src={data.result.name} />
         </div>
       </div>
       <ul>
-        {tags.map(tag => (
-          <li key={tag} >
-            <p>{tag}</p>
+        {data.result.Tags.map(tag => (
+          <li key={tag.id} >
+            <p><span>{tag.name}</span> after text</p>
           </li>
         ))}
       </ul>
@@ -50,7 +48,6 @@ export default function File() {
         <li>An image</li>
         <li>The tags on the image w editors</li>
         <li>amend the current search string</li>
-        <li>what's the url structure?</li>
       </ol>
       <Link to="/">Home</Link>
     </>
