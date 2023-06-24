@@ -7,11 +7,21 @@ module.exports = {
     }
   },
 
-  async getFiles() {
-    const res = await File.findAll({
+  async getFiles(tags) {
+    const opts = {
       attributes: ["name", "id"],
-    });
-    return res;
+    }
+    if (tags) {
+      opts.where = {
+        '$Tags.name$': tags,
+      },
+      opts.include = {
+        model: Tag,
+        attributes: [],
+        through: { attributes: [], }
+      }
+    }
+    return await File.findAll(opts);
   },
 
   async getFileById(id, withTags) {
@@ -46,18 +56,12 @@ module.exports = {
   },
 
   async newFile(name) {
-    const file = await File.findOne({where: {name: name}});
-    if (file) {
-      return {};
-    }
-    const res = await File.create({name});
+    const res = await File.create({name}, {ignoreDuplicates: true});
     return res;
   },
 
-  async replaceFile(id, file) {
-    const existing = await File.findByPk(id, { include: Tag });
-    const updated = existing.set(file);
-    updated.save();
+  async updateFile(existing, file) {
+    const updated = await existing.update(file);
     return await updated.setTags(file.Tags);
   },
 }

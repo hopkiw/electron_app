@@ -1,21 +1,21 @@
 const tagController = require('../controllers/tag.cjs');
 module.exports = {
-  async deleteTag(req, res) { 
+  async deleteTag(req, res) {
     const result = await tagController.deleteTag(req.params.id);
     res.send({ message: "deleteTag", result: result });
   },
 
-  async getTags(req, res) { 
-    const result = await tagController.getTags();
-    res.send({ message: "getTags", result: result });
+  async getTags(req, res) {
+    const result = await tagController.getTags(req.query.files);
+    res.send({ message: "getTags", request: req.query, result: result });
   },
 
-  async getTag(req, res) { 
+  async getTag(req, res) {
     const result = await tagController.getTagById(req.params.id);
     res.send({ message: "getTag", result: result });
   },
 
-  async newTag(req, res) { 
+  async newTag(req, res) {
     if (!req.body || !req.body.name) {
       res.sendStatus(400);
       return;
@@ -24,7 +24,7 @@ module.exports = {
     res.send({ message: "newTag", result: result });
   },
 
-  async replaceTag(req, res) { 
+  async replaceTag(req, res) {
     const result = await tagController.replaceTag(req.params.id, req.body);
     res.send({ message: "replaceTag", result: result });
   },
