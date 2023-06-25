@@ -8,7 +8,7 @@ module.exports = {
 
   // GET /files
   async getFiles(req, res) { 
-    const result = await fileController.getFiles(req.query.tags);
+    const result = await fileController.getFiles(req.query.tags, req.query.notTags);
     res.send({ message: "getFiles", request: req.query, result: result });
   },
 

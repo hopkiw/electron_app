@@ -1,4 +1,6 @@
-const { File, Tag } = require('../models/index.cjs');
+const { File, Tag, sequelize } = require('../models/index.cjs');
+const { Op } = require("sequelize");
+
 module.exports = {
   async deleteFile(id) {
     const res = await File.findByPk(id);
@@ -7,21 +9,40 @@ module.exports = {
     }
   },
 
-  async getFiles(tags) {
+  async getFiles(tags, notTags) {
     const opts = {
       attributes: ["name", "id"],
     }
     if (tags) {
-      opts.where = {
-        '$Tags.name$': tags,
-      },
       opts.include = {
         model: Tag,
         attributes: [],
+        where: { name: tags },
         through: { attributes: [], }
       }
+      if (tags.length > 1) {
+        opts.group = "File.name"
+        opts.having = sequelize.where(
+          sequelize.fn('count', sequelize.col('File.name')), 
+          tags.length
+        )
+      }
     }
-    return await File.findAll(opts);
+
+    const result = await File.findAll(opts);
+    if (notTags) {
+      const badFiles = await File.findAll({
+        include: {
+          model: Tag,
+          attributes: ['id'],
+          where: { name: notTags },
+        }
+      });
+      const badFileIds = badFiles.map((x) => x.id);
+      const newres = result.filter(item => !badFileIds.includes(item.id))
+      return newres;
+    }
+    return result;
   },
 
   async getFileById(id, withTags) {
