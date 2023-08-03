@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# Note these feh command line options:
+#
+#     a [toggle_actions]
+#             Toggle actions display (see --draw-actions)
+#     d [toggle_filenames]
+#             Toggle filename display (see --draw-filename)
+#     i [toggle_info]
+#             Toggle info display (see --info)
+# change what's displayed by default
+# easier to do 1 tag
+# auto-highlight todo tag
+
+# if no args...
+if [[ $# -eq 0 ]]; then
+  echo "Specify a path or choose with browser"
+  exit 1
+fi
+
+feh \
+  -C /usr/share/fonts/truetype/dejavu/ \
+  -e "DejaVuSans/28" \
+  -A ";[tag image]addtags %F" \
+  --action1 ";[play as video]mpv --loop %F" \
+  --action2 ";[addone]addtags %F once" \
+  --info "showtags %F" \
+  --draw-tinted \
+  --draw-filename \
+  --scale-down \
+  -F \
+  $@

@@ -1,0 +1,33 @@
+#!/bin/bash
+
+URL="http://localhost:3000/api"
+FILES="${URL}/files"
+TAGS="${URL}/tags"
+GET="curl -Ss"
+PUT="curl -Ss -X PUT -H Content-Type:application/json"
+POST="curl -Ss -X POST -H Content-Type:application/json"
+
+file="$1"
+tag="$2"
+
+tagid=$($GET $TAGS|jq -r --arg name "$tag" '.result[]|select(.name == $name)|.id')
+fileid=$($GET $FILES|jq -r --arg name "$file" '.result[]|select(.name == $name)|.id')
+
+if [[ -z $fileid ]]; then
+  echo "Files must exist prior to tagging"
+  exit 1
+fi
+
+if [[ -z $tagid ]]; then
+  data=$(jq -c --null-input --arg name "$tag" '{"name": $name}')
+  newtag=$($POST $TAGS --data "$data")
+  tagid=$(printf '%s' "$newtag" | jq -r '.result.id')
+  echo "created new tag ${newtag}"
+fi
+
+existing=$($GET "${FILES}/${fileid}" | jq '.result')
+data=$(printf '%s' "$existing" | jq -c \
+  --argjson added "$tagid" \
+  '.Tags = (.Tags|[.[].id] + [$added])')
+
+$PUT "${FILES}/${fileid}" --data "$data" >/dev/null

@@ -1,0 +1,12 @@
+#!/bin/bash
+
+URL="http://localhost:3000/api"
+FILES="${URL}/files"
+POST="curl -Ss -X POST -H Content-Type:application/json"
+
+file="$1"
+
+data=$(jq -c --null-input --arg name "$file" '{"name": $name}')
+newfile=$($POST $FILES --data "$data")
+echo "created new file ${newfile}"
+added_id=$(printf '%s' "$newfile" | jq -r '.result.id')

@@ -1,0 +1,16 @@
+#!/bin/bash
+
+FILES="http://localhost:3000/api/files"
+
+file="$1"
+
+filesfile=$(mktemp)
+curl -Ss $FILES | jq -r '.result[]|"\(.id),\(.name)"' > $filesfile
+this_id=$(grep ",${file}$" "$filesfile" | cut -d, -f1)
+if [[ -z $this_id ]]; then
+  printf 'error finding file\n'
+  exit 0;
+fi
+
+echo tags for $this_id:
+curl -Ss "$FILES/$this_id" | jq -r '.result.Tags[].name'
